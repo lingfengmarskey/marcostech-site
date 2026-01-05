@@ -1,0 +1,48 @@
+---
+const project = {
+  name: "GridWeave",
+  tagline: "Pixel-based design tool for craft & pattern making.",
+  points: [
+    "Convert images into pixel grids",
+    "Edit pixels and add annotations",
+    "Export clean PDFs for printing",
+  ],
+};
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{project.name} · Projects</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+      main { max-width: 880px; margin: 0 auto; padding: 56px 20px 80px; }
+      .card { border: 1px solid rgba(127,127,127,.25); border-radius: 16px; padding: 22px; }
+      .muted { opacity: .75; }
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      ul { margin: 10px 0 0; padding-left: 18px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/projects">← Projects</a></p>
+
+      <h1 style="margin: 10px 0 6px;">{project.name}</h1>
+      <p class="muted" style="margin:0 0 18px;">{project.tagline}</p>
+
+      <section class="card">
+        <h2 style="margin:0 0 8px; font-size:20px;">Highlights</h2>
+        <ul>
+          {project.points.map((x) => <li>{x}</li>)}
+        </ul>
+      </section>
+
+      <p class="muted" style="margin-top:18px;">
+        Links (coming soon): App Store · Support · Privacy
+      </p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+---
+const projects = [
+  {
+    slug: "gridweave",
+    name: "GridWeave",
+    tagline: "Pixel-based design tool for craft & pattern making.",
+    status: "Active",
+  },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Projects · Marcos</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+      main { max-width: 880px; margin: 0 auto; padding: 56px 20px 80px; }
+      .card { border: 1px solid rgba(127,127,127,.25); border-radius: 16px; padding: 22px; }
+      .muted { opacity: .75; }
+      a { text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .row { display:flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+      .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(127,127,127,.25); font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/">← Home</a></p>
+      <h1 style="margin: 10px 0 18px;">Projects</h1>
+
+      <div style="display:grid; gap:14px;">
+        {projects.map((p) => (
+          <a class="card" href={`/projects/${p.slug}`}>
+            <div class="row">
+              <strong>{p.name}</strong>
+              <span class="pill">{p.status}</span>
+            </div>
+            <div class="muted" style="margin-top:6px;">{p.tagline}</div>
+          </a>
+        ))}
+      </div>
+    </main>
+  </body>
+</html>
