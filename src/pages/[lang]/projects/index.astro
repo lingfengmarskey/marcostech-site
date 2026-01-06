@@ -1,0 +1,49 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "@/i18n";
+
+export function getStaticPaths() {
+  return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
+}
+
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
+
+const projects = [
+  {
+    name: "GridWeave",
+    tagline: tr.projects.gridweaveTagline,
+    status: tr.projects.status,
+    href: `/${locale}/projects/gridweave`,
+  },
+];
+---
+
+<BaseLayout title={tr.projects.seo.title} description={tr.projects.seo.description}>
+  <h1 style="margin: 6px 0 10px; font-size: 42px; letter-spacing: -0.02em;">
+    {tr.projects.title}
+  </h1>
+  <p class="muted" style="font-size:18px; margin: 0 0 18px;">
+    {tr.projects.subtitle}
+  </p>
+
+  <section style="display:grid; gap: 14px;">
+    {projects.map((p) => (
+      <article style="border:1px solid rgba(127,127,127,.25); border-radius:16px; padding:18px 20px;">
+        <div style="display:flex; justify-content: space-between; gap: 12px; align-items: baseline;">
+          <p style="margin:0; font-size:18px; font-weight:700;">{p.name}</p>
+          <a href={p.href}>{tr.common.ui.view}</a>
+        </div>
+        <p class="muted" style="margin: 6px 0 10px;">{p.tagline}</p>
+        <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items:center;">
+          <span style="display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.25);font-size:12px;">
+            {p.status}
+          </span>
+          <span style="display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.25);font-size:12px;">
+            iOS App
+          </span>
+        </div>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

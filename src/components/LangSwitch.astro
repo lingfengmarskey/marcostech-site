@@ -1,0 +1,57 @@
+---
+type Locale = "en" | "ja" | "zh";
+const locales: Locale[] = ["en", "ja", "zh"];
+
+const labels: Record<Locale, string> = {
+  en: "EN",
+  ja: "日本語",
+  zh: "中文",
+};
+
+const currentPath = Astro.url.pathname;
+
+// 如果当前路径形如 /en/... /ja/... /zh/...，去掉前缀；否则原样返回
+function stripLocale(pathname: string) {
+  return pathname.replace(/^\/(en|ja|zh)(?=\/|$)/, "");
+}
+
+// 生成目标语言的路径： /{locale}{rest}
+function toLocalePath(locale: Locale, pathname: string) {
+  const rest = stripLocale(pathname) || "/";
+  return `/${locale}${rest === "/" ? "/" : rest}`;
+}
+
+// 当前语言：优先读 params.lang，否则从路径猜
+const currentLocale =
+  (Astro.params.lang as Locale | undefined) ??
+  ((currentPath.match(/^\/(en|ja|zh)(?=\/|$)/)?.[1] as Locale | undefined) ?? "en");
+---
+
+<nav class="langSwitch" aria-label="Language switch">
+  {locales.map((l) => (
+    <a class="langLink" data-active={l === currentLocale ? "true" : "false"} href={toLocalePath(l, currentPath)}>
+      {labels[l]}
+    </a>
+  ))}
+</nav>
+
+<style>
+  .langSwitch {
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+    opacity: .85;
+  }
+  .langLink {
+    text-decoration: none;
+  }
+  .langLink:hover {
+    text-decoration: underline;
+  }
+  .langLink[data-active="true"] {
+    opacity: 1;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+</style>
