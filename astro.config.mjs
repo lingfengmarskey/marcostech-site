@@ -1,5 +1,11 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-// https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  i18n: {
+    defaultLocale: "en",
+    locales: ["en", "ja", "zh"],
+    routing: {
+      prefixDefaultLocale: true, // => /en 也会有（更统一）
+    },
+  },
+});
