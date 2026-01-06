@@ -1,298 +1,217 @@
 ---
-import { gridweaveDict, type Locale } from "@/i18n/gridweave";
-import LangSwitch from "@/components/LangSwitch.astro";
-
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "@/i18n";
 
 export function getStaticPaths() {
   return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
 }
 
-const lang = (Astro.params.lang ?? "en") as Locale;
-const locale: Locale = ["en", "ja", "zh"].includes(lang) ? lang : "en";
-const t = gridweaveDict[locale];
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
 
 const project = {
-  name: "GridWeave",
+  name: tr.gridweave.name,
+  tagline: tr.gridweave.tagline,
+  status: tr.gridweave.status,
   links: {
     appstore: "https://apps.apple.com/us/app/gridweave/id1569393152",
     support: "mailto:hello@marcostech.one",
-    privacy: `/${locale}/privacy`, // 先按多语言路径写；如果你还没做这个页面，先改回 "/privacy"
+    privacy: "/privacy",
   },
   videos: [
-    { src: "/media/gridweave/GridWeave2_1_3-1.mp4", label: t.aria.clip1 },
-    { src: "/media/gridweave/GridWeave2_1_3-2.mp4", label: t.aria.clip2 },
-    { src: "/media/gridweave/GridWeave2_1_3-3.mp4", label: t.aria.clip3 },
+    { src: "/media/gridweave/GridWeave2_1_3-1.mp4", label: tr.gridweave.aria.clip1 },
+    { src: "/media/gridweave/GridWeave2_1_3-2.mp4", label: tr.gridweave.aria.clip2 },
+    { src: "/media/gridweave/GridWeave2_1_3-3.mp4", label: tr.gridweave.aria.clip3 },
   ],
 };
 ---
 
-<html lang={locale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{project.name} · Projects</title>
-    <meta name="description" content={t.tagline} />
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-          Roboto, Helvetica, Arial;
-      }
-      main {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
-      }
-      h1 { margin: 10px 0 6px; font-size: 42px; letter-spacing: -0.02em; }
-      h2 { margin: 0 0 8px; font-size: 20px; }
-      p { line-height: 1.6; }
-      .muted { opacity: 0.75; }
-      .card {
-        border: 1px solid rgba(127,127,127,.25);
-        border-radius: 16px;
-        padding: 22px;
-      }
-      .grid { display: grid; gap: 14px; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; }
-      .pill {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(127,127,127,.25);
-        font-size: 12px;
-      }
-      a { text-decoration: none; }
-      a:hover { text-decoration: underline; }
-      ul { margin: 10px 0 0; padding-left: 18px; }
+<BaseLayout title={tr.gridweave.seo.title} description={tr.gridweave.seo.description}>
+  <style>
+    h1 { margin: 10px 0 6px; font-size: 42px; letter-spacing: -0.02em; }
+    h2 { margin: 0 0 8px; font-size: 20px; }
+    p { line-height: 1.6; }
+    ul { margin: 10px 0 0; padding-left: 18px; }
+    .grid { display: grid; gap: 14px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .muted { opacity: 0.75; }
+    .card { border: 1px solid rgba(127,127,127,.25); border-radius: 16px; padding: 22px; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid rgba(127,127,127,.25); font-size:12px; }
 
-      .heroMedia { margin-top: 10px; margin-bottom: 8px; }
-      .heroMedia .carousel { margin-top: 6px; }
+    .heroMedia { margin-top: 10px; margin-bottom: 8px; }
+    .heroMedia .carousel { margin-top: 6px; }
 
-      .vid {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
+    .vid { width: 100%; height: auto; display:block; }
 
-      .carousel {
-        position: relative;
-        display: grid;
-        align-items: center;
-      }
+    .carousel { position: relative; display: grid; align-items: center; }
+    .track {
+      display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling: touch; scrollbar-width:none; padding: 6px 0 0;
+    }
+    .track::-webkit-scrollbar { display:none; }
+    .slide { flex: 0 0 100%; scroll-snap-align: center; display:flex; justify-content:center; }
 
-      .track {
-        display: flex;
-        gap: 14px;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding: 6px 0 0;
-      }
-      .track::-webkit-scrollbar { display: none; }
+    .nav {
+      position:absolute; top:50%; transform:translateY(-50%);
+      border:1px solid rgba(127,127,127,.25);
+      background: rgba(0,0,0,.12); backdrop-filter: blur(8px);
+      border-radius:999px; width:38px; height:38px; cursor:pointer; user-select:none;
+    }
+    .nav:disabled { opacity:.35; cursor: default; }
+    .prev { left: 0; } .next { right: 0; }
+    @media (max-width:720px) { .nav { display:none; } }
 
-      .slide {
-        flex: 0 0 100%;
-        scroll-snap-align: center;
-        display: flex;
-        justify-content: center;
-      }
+    .dots { display:flex; gap:8px; justify-content:center; margin-top:8px; }
+    .dot {
+      width:8px; height:8px; border-radius:999px;
+      border:1px solid rgba(127,127,127,.35);
+      background: transparent; cursor:pointer; opacity:.8;
+    }
+    .dot[data-active="true"] { background: currentColor; opacity: 1; }
 
-      .nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        border: 1px solid rgba(127,127,127,.25);
-        background: rgba(0,0,0,.12);
-        backdrop-filter: blur(8px);
-        border-radius: 999px;
-        width: 38px;
-        height: 38px;
-        cursor: pointer;
-        user-select: none;
-      }
-      .nav:disabled { opacity: .35; cursor: default; }
-      .prev { left: 0; }
-      .next { right: 0; }
+    .mediaFrame {
+      width: min(560px, 92vw);
+      margin: 0 auto;
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(127,127,127,.06);
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    }
+  </style>
 
-      @media (max-width: 720px) { .nav { display: none; } }
+  <div class="grid">
+    <p style="margin:0;"><a href={`/${locale}/projects`}>{tr.gridweave.projectsBack}</a></p>
 
-      .dots {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 8px;
-      }
-      .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        border: 1px solid rgba(127,127,127,.35);
-        background: transparent;
-        cursor: pointer;
-        opacity: .8;
-      }
-      .dot[data-active="true"] { background: currentColor; opacity: 1; }
+    <header class="grid" style="gap:10px">
+      <h1>{project.name}</h1>
+      <p class="muted" style="font-size:18px">{project.tagline}</p>
+      <div class="row">
+        <span class="pill">{project.status}</span>
+        <span class="pill">iOS App</span>
+      </div>
+    </header>
 
-      .mediaFrame {
-        width: min(560px, 92vw);
-        margin: 0 auto;
-        border-radius: 22px;
-        overflow: hidden;
-        background: rgba(127,127,127,.06);
-        box-shadow: 0 12px 30px rgba(0,0,0,.12);
-      }
-    </style>
-  </head>
+    <section class="grid heroMedia">
+      <div class="row" style="justify-content: space-between; align-items: baseline;">
+        <h2 style="margin:0;">{tr.gridweave.heroTitle}</h2>
+        <span class="muted" style="font-size: 11px; letter-spacing: .02em;">
+          {tr.gridweave.clipsMeta}
+        </span>
+      </div>
 
-  <body>
-    <main class="grid">
-      <!-- <p><a href={`/${locale}/projects`}>{t.projectsBack}</a></p> -->
+      <div class="carousel" aria-label={tr.gridweave.aria.carousel}>
+        <button class="nav prev" type="button" aria-label={tr.gridweave.aria.prev}>‹</button>
 
-<div class="row" style="justify-content: space-between; align-items:center;">
-  <p style="margin:0;"><a href={`/${locale}/projects`}>{t.projectsBack}</a></p>
-  <LangSwitch />
-</div>
-
-
-      <header class="grid" style="gap:10px">
-        <h1>{project.name}</h1>
-        <p class="muted" style="font-size:18px">{t.tagline}</p>
-        <div class="row">
-          <span class="pill">{t.status}</span>
-          <span class="pill">iOS App</span>
-        </div>
-      </header>
-
-      <section class="grid heroMedia">
-        <div class="row" style="justify-content: space-between; align-items: baseline;">
-          <h2 style="margin:0;">{t.heroTitle}</h2>
-          <span class="muted" style="font-size: 11px; letter-spacing: .02em;">
-            {t.clipsMeta}
-          </span>
-        </div>
-
-        <div class="carousel" aria-label={t.aria.carousel}>
-          <button class="nav prev" type="button" aria-label={t.aria.prev}>‹</button>
-
-          <div class="track" id="gw-track">
-            {project.videos.map((v) => (
-              <div class="slide">
-                <div class="mediaFrame">
-                  <video class="vid" src={v.src} muted playsinline loop autoplay preload="metadata" aria-label={v.label}></video>
-                </div>
+        <div class="track" id="gw-track">
+          {project.videos.map((v) => (
+            <div class="slide">
+              <div class="mediaFrame">
+                <video class="vid" src={v.src} muted playsinline loop autoplay preload="metadata" aria-label={v.label}></video>
               </div>
-            ))}
-          </div>
-
-          <button class="nav next" type="button" aria-label={t.aria.next}>›</button>
+            </div>
+          ))}
         </div>
 
-        <div class="dots" id="gw-dots" aria-label={t.aria.dots}>
-          <button class="dot" type="button" aria-label={t.aria.goto1}></button>
-          <button class="dot" type="button" aria-label={t.aria.goto2}></button>
-          <button class="dot" type="button" aria-label={t.aria.goto3}></button>
-        </div>
-      </section>
+        <button class="nav next" type="button" aria-label={tr.gridweave.aria.next}>›</button>
+      </div>
 
-      <section class="card grid">
-        <h2>{t.sectionWhat}</h2>
-        <ul>{t.highlights.map((x) => <li>{x}</li>)}</ul>
-      </section>
+      <div class="dots" id="gw-dots" aria-label={tr.gridweave.aria.dots}>
+        <button class="dot" type="button" aria-label={tr.gridweave.aria.goto1}></button>
+        <button class="dot" type="button" aria-label={tr.gridweave.aria.goto2}></button>
+        <button class="dot" type="button" aria-label={tr.gridweave.aria.goto3}></button>
+      </div>
+    </section>
 
-      <section class="card grid">
-        <h2>{t.sectionWho}</h2>
-        <ul>{t.audience.map((x) => <li>{x}</li>)}</ul>
-      </section>
+    <section class="card grid">
+      <h2>{tr.gridweave.sections.what}</h2>
+      <ul>{tr.gridweave.highlights.map((x) => <li>{x}</li>)}</ul>
+    </section>
 
-      <section class="card grid">
-        <h2>{t.sectionPhilosophy}</h2>
-        <ul>{t.philosophy.map((x) => <li>{x}</li>)}</ul>
-      </section>
+    <section class="card grid">
+      <h2>{tr.gridweave.sections.who}</h2>
+      <ul>{tr.gridweave.audience.map((x) => <li>{x}</li>)}</ul>
+    </section>
 
-      <section class="card grid">
-        <h2>{t.sectionLinks}</h2>
-        <div class="grid">
-          <div>
-            <strong>{t.appStore}</strong>
-            <div class="muted">
-              <a href={project.links.appstore} target="_blank" rel="noopener">{t.viewOnAppStore}</a>
-            </div>
-          </div>
+    <section class="card grid">
+      <h2>{tr.gridweave.sections.philosophy}</h2>
+      <ul>{tr.gridweave.philosophy.map((x) => <li>{x}</li>)}</ul>
+    </section>
 
-          <div>
-            <strong>{t.support}</strong>
-            <div class="muted">
-              <a href={project.links.support}>{project.links.support}</a>
-            </div>
-          </div>
-
-          <div>
-            <strong>{t.privacy}</strong>
-            <div class="muted">
-              <a href={project.links.privacy}>{t.viewPrivacy}</a>
-            </div>
+    <section class="card grid">
+      <h2>{tr.gridweave.sections.links}</h2>
+      <div class="grid">
+        <div>
+          <strong>{tr.gridweave.links.appStore}</strong>
+          <div class="muted">
+            <a href={project.links.appstore} target="_blank" rel="noopener">{tr.gridweave.links.viewOnAppStore}</a>
           </div>
         </div>
-      </section>
+        <div>
+          <strong>{tr.gridweave.links.support}</strong>
+          <div class="muted"><a href={project.links.support}>{project.links.support}</a></div>
+        </div>
+        <div>
+          <strong>{tr.gridweave.links.privacy}</strong>
+          <div class="muted"><a href={project.links.privacy}>{tr.gridweave.links.viewPrivacy}</a></div>
+        </div>
+      </div>
+    </section>
 
-      <p class="muted">{t.footer}</p>
-    </main>
+    <p class="muted">{tr.gridweave.footer}</p>
+  </div>
 
-    <script is:inline>
-      (function () {
-        const track = document.getElementById("gw-track");
-        const dotsWrap = document.getElementById("gw-dots");
-        if (!track || !dotsWrap) return;
+  <script is:inline>
+    (function () {
+      const track = document.getElementById("gw-track");
+      const dotsWrap = document.getElementById("gw-dots");
+      if (!track || !dotsWrap) return;
 
-        const slides = Array.from(track.querySelectorAll(".slide"));
-        const videos = Array.from(track.querySelectorAll("video"));
-        const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
-        const prev = track.parentElement.querySelector(".prev");
-        const next = track.parentElement.querySelector(".next");
+      const slides = Array.from(track.querySelectorAll(".slide"));
+      const videos = Array.from(track.querySelectorAll("video"));
+      const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
+      const prev = track.parentElement.querySelector(".prev");
+      const next = track.parentElement.querySelector(".next");
 
-        let index = 0;
+      let index = 0;
 
-        function setActive(i, opts = { smooth: true }) {
-          index = Math.max(0, Math.min(slides.length - 1, i));
-          const left = slides[index].offsetLeft;
-          track.scrollTo({ left, behavior: opts.smooth ? "smooth" : "auto" });
+      function setActive(i, opts = { smooth: true }) {
+        index = Math.max(0, Math.min(slides.length - 1, i));
+        const left = slides[index].offsetLeft;
+        track.scrollTo({ left, behavior: opts.smooth ? "smooth" : "auto" });
 
-          dots.forEach((d, di) => d.setAttribute("data-active", di === index ? "true" : "false"));
+        dots.forEach((d, di) => d.setAttribute("data-active", di === index ? "true" : "false"));
 
-          videos.forEach((v, vi) => {
-            if (vi === index) v.play().catch(() => {});
-            else { v.pause(); v.currentTime = 0; }
-          });
+        videos.forEach((v, vi) => {
+          if (vi === index) v.play().catch(() => {});
+          else { v.pause(); v.currentTime = 0; }
+        });
 
-          if (prev) prev.disabled = index === 0;
-          if (next) next.disabled = index === slides.length - 1;
-        }
+        if (prev) prev.disabled = index === 0;
+        if (next) next.disabled = index === slides.length - 1;
+      }
 
-        function nearestIndex() {
-          const pos = track.scrollLeft;
-          let best = 0;
-          let bestDist = Infinity;
-          slides.forEach((s, i) => {
-            const d = Math.abs(s.offsetLeft - pos);
-            if (d < bestDist) { bestDist = d; best = i; }
-          });
-          return best;
-        }
+      function nearestIndex() {
+        const pos = track.scrollLeft;
+        let best = 0;
+        let bestDist = Infinity;
+        slides.forEach((s, i) => {
+          const d = Math.abs(s.offsetLeft - pos);
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        return best;
+      }
 
-        prev && prev.addEventListener("click", () => setActive(index - 1));
-        next && next.addEventListener("click", () => setActive(index + 1));
-        dots.forEach((d, i) => d.addEventListener("click", () => setActive(i)));
+      prev && prev.addEventListener("click", () => setActive(index - 1));
+      next && next.addEventListener("click", () => setActive(index + 1));
+      dots.forEach((d, i) => d.addEventListener("click", () => setActive(i)));
 
-        let tmr = null;
-        track.addEventListener("scroll", () => {
-          clearTimeout(tmr);
-          tmr = setTimeout(() => setActive(nearestIndex(), { smooth: true }), 120);
-        }, { passive: true });
+      let t = null;
+      track.addEventListener("scroll", () => {
+        clearTimeout(t);
+        t = setTimeout(() => setActive(nearestIndex(), { smooth: true }), 120);
+      }, { passive: true });
 
-        setActive(0, { smooth: false });
-      })();
-    </script>
-  </body>
-</html>
+      setActive(0, { smooth: false });
+    })();
+  </script>
+</BaseLayout>

@@ -1,125 +1,28 @@
 ---
-import LangSwitch from "@/components/LangSwitch.astro";
-
-type Locale = "en" | "ja" | "zh";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "../../i18n";
 
 export function getStaticPaths() {
   return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
 }
 
-const lang = (Astro.params.lang ?? "en") as Locale;
-const locale: Locale = ["en", "ja", "zh"].includes(lang) ? lang : "en";
-
-const t = {
-  en: {
-    back: "← Home",
-    title: "About",
-    p1: "Hi, I’m Marcos. I build independent apps and tools with a focus on clarity and long-term maintainability.",
-    p2: "I care about simple interaction design, performance, and privacy by default.",
-    p3: "If you’d like to get in touch, feel free to email me.",
-    contactLabel: "Email",
-  },
-  ja: {
-    back: "← ホーム",
-    title: "プロフィール",
-    p1: "こんにちは、Marcos です。見やすさと長期的な保守性を大切にしながら、個人でアプリやツールを作っています。",
-    p2: "シンプルなUI、パフォーマンス、そしてデフォルトでのプライバシー配慮を重視しています。",
-    p3: "お問い合わせはメールでお気軽にどうぞ。",
-    contactLabel: "メール",
-  },
-  zh: {
-    back: "← 首页",
-    title: "关于我",
-    p1: "你好，我是 Marcos。我独立开发应用与工具，注重清晰、克制以及长期可维护性。",
-    p2: "我关注简洁的交互设计、性能表现，以及默认保护隐私。",
-    p3: "如需联系，欢迎给我发邮件。",
-    contactLabel: "邮箱",
-  },
-}[locale];
-
-const email = "hello@marcostech.one";
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
 ---
 
-<html lang={locale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.title}</title>
-    <meta name="description" content={t.p1} />
-    <style>
-      :root {
-        color-scheme: light dark;
-      }
-      body {
-        margin: 0;
-        font-family:
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          Segoe UI,
-          Roboto,
-          Helvetica,
-          Arial;
-      }
-      main {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
-      }
-      h1 {
-        margin: 10px 0 12px;
-        font-size: 42px;
-        letter-spacing: -0.02em;
-      }
-      p {
-        line-height: 1.6;
-        margin: 0 0 14px;
-      }
-      .muted {
-        opacity: 0.75;
-      }
-      a {
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
+<BaseLayout title={tr.about.seo.title} description={tr.about.seo.description}>
+  <h1 style="margin: 6px 0 12px; font-size: 42px; letter-spacing: -0.02em;">
+    {tr.about.title}
+  </h1>
 
-      .topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-      }
+  <section style="border:1px solid rgba(127,127,127,.25); border-radius:16px; padding:22px;">
+    <p class="muted" style="font-size:18px; margin:0 0 14px;">{tr.about.lead}</p>
+    <p style="margin:0 0 14px; line-height:1.6;">{tr.about.p1}</p>
+    <p style="margin:0 0 14px; line-height:1.6;">{tr.about.p2}</p>
 
-      .card {
-        border: 1px solid rgba(127, 127, 127, 0.25);
-        border-radius: 16px;
-        padding: 22px;
-        margin-top: 16px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <div class="topbar">
-        <a href={`/${locale}/`}>{t.back}</a>
-        <LangSwitch />
-      </div>
-
-      <h1>{t.title}</h1>
-
-      <section class="card">
-        <p class="muted" style="font-size:18px;">{t.p1}</p>
-        <p>{t.p2}</p>
-        <p>{t.p3}</p>
-
-        <p class="muted" style="margin-top: 18px;">
-          <strong>{t.contactLabel}:</strong>
-          <a href={`mailto:${email}`}>{email}</a>
-        </p>
-      </section>
-    </main>
-  </body>
-</html>
+    <p class="muted" style="margin-top: 18px;">
+      <strong>{tr.about.contact.label}:</strong>
+      <a href={`mailto:${tr.about.contact.value}`}>{tr.about.contact.value}</a>
+    </p>
+  </section>
+</BaseLayout>

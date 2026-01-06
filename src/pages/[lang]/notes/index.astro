@@ -1,0 +1,24 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "@/i18n";
+
+export function getStaticPaths() {
+  return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
+}
+
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
+---
+
+<BaseLayout title={tr.notes.seo.title} description={tr.notes.seo.description}>
+  <h1 style="margin: 6px 0 10px; font-size: 42px; letter-spacing: -0.02em;">
+    {tr.notes.title}
+  </h1>
+  <p class="muted" style="font-size:18px; margin: 0 0 18px;">
+    {tr.notes.subtitle}
+  </p>
+
+  <section style="border:1px solid rgba(127,127,127,.25); border-radius:16px; padding:22px;">
+    <p class="muted" style="margin:0;">{tr.notes.empty}</p>
+  </section>
+</BaseLayout>

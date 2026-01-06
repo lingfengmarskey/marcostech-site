@@ -1,124 +1,49 @@
 ---
-import LangSwitch from "@/components/LangSwitch.astro";
-
-type Locale = "en" | "ja" | "zh";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "@/i18n";
 
 export function getStaticPaths() {
   return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
 }
 
-const lang = (Astro.params.lang ?? "en") as Locale;
-const locale: Locale = ["en", "ja", "zh"].includes(lang) ? lang : "en";
-
-const t = {
-  en: {
-    title: "Projects",
-    subtitle: "Apps and tools I build.",
-    backHome: "← Home",
-    view: "View →",
-    gridweaveTagline: "A pixel-based design tool for craft and pattern making.",
-    status: "Available on the App Store",
-  },
-  ja: {
-    title: "プロジェクト",
-    subtitle: "自分で作っているアプリやツール。",
-    backHome: "← ホーム",
-    view: "見る →",
-    gridweaveTagline: "クラフトやパターン作成のための、ピクセルベースのデザインツール。",
-    status: "App Store で配信中",
-  },
-  zh: {
-    title: "项目",
-    subtitle: "我在做的应用与工具。",
-    backHome: "← 首页",
-    view: "查看 →",
-    gridweaveTagline: "面向手工与图案制作的像素网格设计工具。",
-    status: "已上架 App Store",
-  },
-}[locale];
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
 
 const projects = [
   {
     name: "GridWeave",
-    tagline: t.gridweaveTagline,
-    status: t.status,
+    tagline: tr.projects.gridweaveTagline,
+    status: tr.projects.status,
     href: `/${locale}/projects/gridweave`,
   },
 ];
 ---
 
-<html lang={locale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.title}</title>
-    <meta name="description" content={t.subtitle} />
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-          Roboto, Helvetica, Arial;
-      }
-      main {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
-      }
-      h1 { margin: 10px 0 6px; font-size: 42px; letter-spacing: -0.02em; }
-      p { line-height: 1.6; }
-      .muted { opacity: 0.75; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-      .topbar { display:flex; justify-content: space-between; align-items:center; gap: 12px; }
-      a { text-decoration: none; }
-      a:hover { text-decoration: underline; }
+<BaseLayout title={tr.projects.seo.title} description={tr.projects.seo.description}>
+  <h1 style="margin: 6px 0 10px; font-size: 42px; letter-spacing: -0.02em;">
+    {tr.projects.title}
+  </h1>
+  <p class="muted" style="font-size:18px; margin: 0 0 18px;">
+    {tr.projects.subtitle}
+  </p>
 
-      .card {
-        border: 1px solid rgba(127,127,127,.25);
-        border-radius: 16px;
-        padding: 18px 20px;
-      }
-      .list { display: grid; gap: 14px; margin-top: 14px; }
-      .pill {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(127,127,127,.25);
-        font-size: 12px;
-      }
-      .projHead { display:flex; justify-content: space-between; gap: 12px; align-items: baseline; }
-      .projName { font-size: 18px; font-weight: 700; margin: 0; }
-      .projMeta { display:flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <div class="topbar">
-        <a href={`/${locale}/`}>{t.backHome}</a>
-        <LangSwitch />
-      </div>
-
-      <header style="margin-top: 10px;">
-        <h1>{t.title}</h1>
-        <p class="muted" style="font-size:18px; margin: 0;">{t.subtitle}</p>
-      </header>
-
-      <section class="list" aria-label={t.title}>
-        {projects.map((p) => (
-          <article class="card">
-            <div class="projHead">
-              <p class="projName">{p.name}</p>
-              <a href={p.href}>{t.view}</a>
-            </div>
-            <p class="muted" style="margin: 6px 0 10px;">{p.tagline}</p>
-            <div class="projMeta">
-              <span class="pill">{p.status}</span>
-              <span class="pill">iOS App</span>
-            </div>
-          </article>
-        ))}
-      </section>
-    </main>
-  </body>
-</html>
+  <section style="display:grid; gap: 14px;">
+    {projects.map((p) => (
+      <article style="border:1px solid rgba(127,127,127,.25); border-radius:16px; padding:18px 20px;">
+        <div style="display:flex; justify-content: space-between; gap: 12px; align-items: baseline;">
+          <p style="margin:0; font-size:18px; font-weight:700;">{p.name}</p>
+          <a href={p.href}>{tr.common.ui.view}</a>
+        </div>
+        <p class="muted" style="margin: 6px 0 10px;">{p.tagline}</p>
+        <div style="display:flex; gap: 10px; flex-wrap: wrap; align-items:center;">
+          <span style="display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.25);font-size:12px;">
+            {p.status}
+          </span>
+          <span style="display:inline-block;padding:6px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.25);font-size:12px;">
+            iOS App
+          </span>
+        </div>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

@@ -1,106 +1,34 @@
 ---
-import LangSwitch from "@/components/LangSwitch.astro";
-
-type Locale = "en" | "ja" | "zh";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { normalizeLocale, t } from "../../i18n";
 
 export function getStaticPaths() {
   return ["en", "ja", "zh"].map((lang) => ({ params: { lang } }));
 }
 
-const lang = (Astro.params.lang ?? "en") as Locale;
-const locale: Locale = ["en", "ja", "zh"].includes(lang) ? lang : "en";
-
-const t = {
-  en: {
-    title: "Marcos Tech",
-    subtitle: "Independent apps and tools, built with clarity.",
-    ctaProjects: "View Projects →",
-    ctaAbout: "About →",
-  },
-  ja: {
-    title: "Marcos Tech",
-    subtitle: "見やすさを大切に、個人でアプリやツールを作っています。",
-    ctaProjects: "プロジェクトを見る →",
-    ctaAbout: "プロフィール →",
-  },
-  zh: {
-    title: "Marcos Tech",
-    subtitle: "专注清晰与克制的独立应用与工具。",
-    ctaProjects: "查看项目 →",
-    ctaAbout: "关于我 →",
-  },
-}[locale];
+const locale = normalizeLocale(Astro.params.lang);
+const tr = t(locale);
 ---
 
-<html lang={locale}>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.title}</title>
-    <meta name="description" content={t.subtitle} />
-    <style>
-      :root { color-scheme: light dark; }
-      body {
-        margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI,
-          Roboto, Helvetica, Arial;
-      }
-      main {
-        max-width: 880px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
-      }
-      h1 { margin: 10px 0 10px; font-size: 42px; letter-spacing: -0.02em; }
-      p { line-height: 1.6; }
-      .muted { opacity: 0.75; }
-      a { text-decoration: none; }
-      a:hover { text-decoration: underline; }
+<BaseLayout title={tr.home.seo.title} description={tr.home.seo.description}>
+  <h1 style="margin: 6px 0 10px; font-size: 42px; letter-spacing: -0.02em;">
+    {tr.home.hero.title}
+  </h1>
+  <p class="muted" style="font-size:18px; margin: 0 0 18px;">
+    {tr.home.hero.subtitle}
+  </p>
 
-      .topbar {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .hero {
-        margin-top: 26px;
-        display: grid;
-        gap: 16px;
-      }
-
-      .actions {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-top: 6px;
-      }
-
-      .pillLink {
-        display: inline-block;
-        padding: 10px 12px;
-        border-radius: 999px;
-        border: 1px solid rgba(127,127,127,.25);
-        font-size: 14px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main>
-      <div class="topbar">
-        <LangSwitch />
+  <section style="margin-top: 18px; display:grid; gap: 14px;">
+    {[
+      { ...tr.home.blocks.projects, href: `/${locale}/projects` },
+      { ...tr.home.blocks.notes, href: `/${locale}/notes` },
+      { ...tr.home.blocks.labs, href: `/${locale}/labs` },
+    ].map((b) => (
+      <div style="border:1px solid rgba(127,127,127,.25); border-radius:16px; padding:18px 20px;">
+        <strong>{b.title}</strong>
+        <p class="muted" style="margin:8px 0 10px;">{b.body}</p>
+        <a href={b.href}>{b.cta}</a>
       </div>
-
-      <section class="hero">
-        <h1>{t.title}</h1>
-        <p class="muted" style="font-size:18px; margin:0;">{t.subtitle}</p>
-
-        <div class="actions">
-          <a class="pillLink" href={`/${locale}/projects`}>{t.ctaProjects}</a>
-          <a class="pillLink" href={`/${locale}/about`}>{t.ctaAbout}</a>
-        </div>
-      </section>
-    </main>
-  </body>
-</html>
+    ))}
+  </section>
+</BaseLayout>
